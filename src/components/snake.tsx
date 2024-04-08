@@ -1,14 +1,11 @@
 'use client';
 
-import {
-  ArrowBigDown,
-  ArrowBigLeft,
-  ArrowBigRight,
-  ArrowBigUp,
-  X
-} from 'lucide-react';
+import { X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { KeyboardEvent, useEffect, useRef, useState } from 'react';
+import Controls from './controls';
+import { Rating } from './rating';
+import { Toolbar } from './toolbar';
 import { Button } from './ui/button';
 import { Dialog, DialogContent } from './ui/dialog';
 import { createClient } from '@/lib/supabase/client';
@@ -18,21 +15,22 @@ const INITIAL_SNAKE_LENGTH = 2;
 const INITIAL_DIRECTION: Direction = 'DOWN';
 
 type Direction = 'UP' | 'DOWN' | 'LEFT' | 'RIGHT';
-
 type Point = {
   x: number;
   y: number;
 };
 
-export interface IData {
-  id: number;
-  inserted_at: string;
-  updated_at: string;
-  username: string;
-  score: number;
-}
-
-export default function Snake({ data }: { data: IData[] }) {
+export default function Snake({
+  data
+}: {
+  data: {
+    id: number;
+    inserted_at: string;
+    updated_at: string;
+    username: string;
+    score: number;
+  }[];
+}) {
   const [snake, setSnake] = useState<Point[]>([
     { x: 2, y: 0 },
     { x: 1, y: 0 },
@@ -166,33 +164,12 @@ export default function Snake({ data }: { data: IData[] }) {
 
   return (
     <>
-      {gameStarted ? (
-        <ul className='flex justify-center gap-2'>
-          <li className='flex'>
-            <span className=' rounded-l-full bg-gray-900 px-3 py-1 font-medium text-white'>
-              Top Score:
-            </span>
-            <span className='min-w-12 rounded-r-full bg-gray-200 px-4 py-1 text-center font-bold text-green-600'>
-              {data[0].score}
-            </span>
-          </li>
-          <li className='flex'>
-            <span className=' rounded-l-full bg-gray-900 px-3 py-1 font-medium text-white'>
-              Your Score:
-            </span>
-            <span className='min-w-12 rounded-r-full bg-gray-200 px-4 py-1 text-center font-bold text-blue-500'>
-              {score}
-            </span>
-          </li>
-        </ul>
-      ) : (
-        <Button
-          onClick={onGameStart}
-          className=' cursor-pointer'
-        >
-          Start Game
-        </Button>
-      )}
+      <Toolbar
+        gameStarted={gameStarted}
+        topScore={data[0].score}
+        score={score}
+        onGameStart={onGameStart}
+      />
 
       <div className='flex justify-center gap-8'>
         <div
@@ -225,59 +202,10 @@ export default function Snake({ data }: { data: IData[] }) {
           </div>
         </div>
 
-        <div className='space-y-3'>
-          <h3 className='text-start text-base font-bold'>Top 10 rating:</h3>
-          <ul className='w-80 rounded-lg border border-border'>
-            {data.map(item => (
-              <li
-                key={item.id}
-                className='flex justify-between border-b border-b-border px-4 py-2'
-              >
-                <span className='font-bold'>{item.username}</span>
-                <span className=' text-blue-600'>{item.score}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <Rating data={data} />
       </div>
 
-      <div className='flex flex-col items-center gap-5'>
-        <h2 className='text-2xl font-bold'>How to Play</h2>
-        <h3>
-          <span className='text-lg font-medium text-yellow-600'>Note: </span>
-          press{' '}
-          <span className='rounded-lg bg-slate-200 px-2 py-1'>
-            <span>Space</span>
-          </span>{' '}
-          to pause the game
-        </h3>
-        <ul className='space-y-1'>
-          <li className='flex items-center gap-2'>
-            <span className='rounded-lg bg-slate-200 p-1'>
-              <ArrowBigUp className='stroke-1' />
-            </span>
-            <span className='text-lg'>Move Up</span>
-          </li>
-          <li className='flex items-center gap-2'>
-            <span className='rounded-lg bg-slate-200 p-1'>
-              <ArrowBigDown className='stroke-1' />
-            </span>
-            <span className='text-lg'>Move Down</span>
-          </li>
-          <li className='flex items-center gap-2'>
-            <span className='rounded-lg bg-slate-200 p-1'>
-              <ArrowBigLeft className='stroke-1' />
-            </span>
-            <span className='text-lg'>Move Left</span>
-          </li>
-          <li className='flex items-center gap-2'>
-            <span className='rounded-lg bg-slate-200 p-1'>
-              <ArrowBigRight className='stroke-1' />
-            </span>
-            <span className='text-lg'>Move Right</span>
-          </li>
-        </ul>
-      </div>
+      <Controls />
 
       <Dialog open={gameOver}>
         <DialogContent>
