@@ -8,17 +8,14 @@ import { Rating } from './rating';
 import { Toolbar } from './toolbar';
 import { Button } from './ui/button';
 import { Dialog, DialogContent } from './ui/dialog';
+import {
+  GRID_SIZE,
+  INITIAL_DIRECTION,
+  INITIAL_SNAKE_LENGTH,
+  INITIAL_SPEED
+} from '@/lib/const';
 import { createClient } from '@/lib/supabase/client';
-
-const GRID_SIZE = 20;
-const INITIAL_SNAKE_LENGTH = 2;
-const INITIAL_DIRECTION: Direction = 'DOWN';
-
-type Direction = 'UP' | 'DOWN' | 'LEFT' | 'RIGHT';
-type Point = {
-  x: number;
-  y: number;
-};
+import type { Direction, Point } from '@/lib/types';
 
 export default function Snake({
   data
@@ -41,7 +38,7 @@ export default function Snake({
   const [gameStarted, setGameStarted] = useState<boolean>(false);
   const [gameOver, setGameOver] = useState<boolean>(false);
   const [paused, setPaused] = useState<boolean>(false);
-  const [speed, setSpeed] = useState<number>(150);
+  const [speed, setSpeed] = useState<number>(INITIAL_SPEED);
   const [score, setScore] = useState<number>(0);
   const [username, setUsername] = useState<string>('');
 
@@ -132,7 +129,7 @@ export default function Snake({
   };
 
   const onGameStart = (): void => {
-    setSpeed(150);
+    setSpeed(INITIAL_SPEED);
     setScore(0);
     setDirection(INITIAL_DIRECTION);
     setGameOver(false);
